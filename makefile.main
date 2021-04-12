@@ -1,21 +1,25 @@
-OPT = -g3 -O0
-LIB_SOURCES1 = gradient.c
-
+OPT = -g0 -O3
+LIB_SOURCES1 = distance_fields.c
+TARGET_SOURCES = src/gradient.c
 LIB_SOURCES = $(addprefix src/, $(LIB_SOURCES1))
 CC = gcc
-TARGET = run.exe
+TARGET = book.pdf
+TARGETS = gradient.bin circle.bin
 LIB_OBJECTS =$(LIB_SOURCES:.c=.o)
+TARGET_OBJECTS = $(TARGET_SOURCES:.c=.o)
 LDFLAGS= -L. $(OPT) # -Wl,--gc-sections -Wl,-s -fdata-sections -ffunction-sections
 LIBS= iron/libiron.a -lm -licydb -lX11 -lglfw -lGL -lpng
 ALL= $(TARGET)
 CFLAGS = -Isrc/ -I. -Ilibicydb/include -Iinclude/ -std=gnu11 -c $(OPT) -Werror=implicit-function-declaration -Wformat=0 -D_GNU_SOURCE -fdiagnostics-color  -Wwrite-strings -Werror=uninitialized -DUSE_VALGRIND -DDEBUG -Wall
 
-$(TARGET): $(LIB_OBJECTS) libicydb.so libiron.so
-	$(CC) $(LDFLAGS) $(LIB_OBJECTS) $(LIBS) -o $@
+$(TARGET): $(LIB_OBJECTS) $(TARGET_OBJECTS) libiron.so gradient.png circle.png
+	echo ok #$(CC) $(LDFLAGS) $(LIB_OBJECTS) $(LIBS) -o $@
 
-libicydb.so:
-	make -C libicydb
-	cp libicydb/libicydb.so .
+%.bin: src/%.o $(LIB_OBJECTS)
+	$(CC) $(LDFLAGS) $< $(LIB_OBJECTS) $(LIBS) -o $@
+%.png: %.bin
+	./$< $@ 512 800
+
 
 libiron.so: iron/libiron.so
 	make -C iron
@@ -23,12 +27,12 @@ libiron.so: iron/libiron.so
 
 all: $(ALL)
 
-.c.o: $(HEADERS) $(LEVEL_CS)
+.c.o:
 	$(CC) $(CFLAGS) $< -o $@ -MMD -MF $@.depends
 
 depend: h-depend
 clean:
-	rm -f $(LIB_OBJECTS) $(ALL) src/*.o.depends src/*.o src/level*.c src/*.shader.c 
+	rm -f $(LIB_OBJECTS) $(ALL) src/*.o.depends src/*.o 
 .PHONY: test
 test: $(TARGET)
 	make -f makefile.compiler
