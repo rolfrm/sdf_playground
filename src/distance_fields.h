@@ -21,3 +21,4 @@ rgb rgb_blend(rgb a, rgb b, f32 ratio);
 f32 get_distance(vec2 p);
 rgb get_color(vec2 p);
 
+extern f32 pixel_size;

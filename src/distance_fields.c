@@ -93,14 +93,16 @@ typedef struct{
   rgb background;
   f32 aspect;
 }distfield_ctx;
-
+f32 pixel_size;
 rgb color_distfield(int x, int y, void * userdata){
   distfield_ctx * ctx = userdata;
+  
   vec2 p = vec2_div(vec2_new(x, y), ctx->size);
   vec2 d = vec2_sub(ctx->stop, ctx->start);
   vec2 p2 = vec2_add(vec2_mul(p, d), ctx->start);
   f32 dist = get_distance(p2);
   rgb bg = ctx->background;
+  pixel_size = ctx->pixel_size;
   if(dist < 0.0){
     return get_color(p2);
   }else if(dist < ctx->pixel_size){
@@ -141,11 +143,15 @@ int main(int c, char ** argv){
     logd("Invalid dimensions %i %i\n", width, height);
   }
   logd("%s %i %i\n", file, width, height);
+  
+  float px_size1 = 1.0 / width;
+  float px_size2 = 1.0 / height;
+  
   distfield_ctx ctx = {
 		       .start = vec2_new(0,0),
 		       .stop = vec2_new(1,1),
 		       .background = (rgb){.r = 1.0, .g = 1.0, .b = 1.0},
-		       .pixel_size = 1.0f / width,
+		       .pixel_size = sqrtf(px_size1 * px_size1 + px_size2 * px_size2),
 		       .size = vec2_new(width, height)
   };
   distfield_calc_aspect(&ctx);
