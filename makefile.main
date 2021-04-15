@@ -1,5 +1,5 @@
 OPT = -g0 -O3
-LIB_SOURCES1 = distance_fields.c
+LIB_SOURCES1 = distance_fields.c hsv.c
 TARGET_SOURCES = src/gradient.c
 LIB_SOURCES = $(addprefix src/, $(LIB_SOURCES1))
 CC = gcc
@@ -12,13 +12,13 @@ LIBS= iron/libiron.a -lm -licydb -lX11 -lglfw -lGL -lpng
 ALL= $(TARGET)
 CFLAGS = -Isrc/ -I. -Ilibicydb/include -Iinclude/ -std=gnu11 -c $(OPT) -Werror=implicit-function-declaration -Wformat=0 -D_GNU_SOURCE -fdiagnostics-color  -Wwrite-strings -Werror=uninitialized -DUSE_VALGRIND -DDEBUG -Wall
 
-$(TARGET): $(LIB_OBJECTS) $(TARGET_OBJECTS) libiron.so gradient.png circle.png circle2.png circle3.png
+$(TARGET): $(LIB_OBJECTS) $(TARGET_OBJECTS) libiron.so gradient.png circle.png circle2.png circle3.png gradient_hsv.png circle4.png
 	echo ok #$(CC) $(LDFLAGS) $(LIB_OBJECTS) $(LIBS) -o $@
 
 %.bin: src/%.o $(LIB_OBJECTS)
 	$(CC) $(LDFLAGS) $< $(LIB_OBJECTS) $(LIBS) -o $@
 %.png: %.bin
-	./$< $@ 512 800
+	./$< $@  1024 1024 
 
 
 libiron.so: iron/libiron.so

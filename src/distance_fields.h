@@ -14,11 +14,19 @@ typedef struct{
   f32 r, g, b;
 }rgb;
 
+typedef struct{
+  f32 h, s, v;
+}hsv;
+
+
+hsv rgb2hsv(rgb color);
+rgb hsv2rgb(hsv color);
+
 rgb rgb_blend(rgb a, rgb b, f32 ratio);
+hsv hsv_blend(hsv a, hsv b, f32 ratio);
 
-
-
-f32 get_distance(vec2 p);
+#define RGB(r2,g2,b2) {.r = r2, .g = g2, .b = b2}
+#define dot(x,y) vec2_dot(x,y)
 rgb get_color(vec2 p);
-
+rgb df_mix(rgb color, rgb bg, f32 dist);
 extern f32 pixel_size;

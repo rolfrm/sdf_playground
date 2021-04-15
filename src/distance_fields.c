@@ -12,6 +12,22 @@ rgb rgb_blend(rgb a, rgb b, f32 ratio){
       .b = a.b * ratio + b.b * inv_ratio};
 }
 
+hsv hsv_blend(hsv a, hsv b, f32 ratio){
+  f32 inv_ratio = 1.0f - ratio;
+  f32 d1 = fabs(a.h - b.h);
+  if(d1 > 180){
+    b.h -= 360;
+  }
+  
+  hsv result = {
+    .h = a.h * ratio + b.h * inv_ratio,
+    .s = a.s * ratio + b.s * inv_ratio,
+    .v = a.v * ratio + b.v * inv_ratio};
+  if(result.h < 0)
+    result.h += 360;
+  return result;
+}
+
 
 void write_png_file_rgb(const char *filename, const int width, const int height, int bit_depth, rgb (* f) (int x, int y, void * userdata), void * userdata) {
 
@@ -100,13 +116,17 @@ rgb color_distfield(int x, int y, void * userdata){
   vec2 p = vec2_div(vec2_new(x, y), ctx->size);
   vec2 d = vec2_sub(ctx->stop, ctx->start);
   vec2 p2 = vec2_add(vec2_mul(p, d), ctx->start);
-  f32 dist = get_distance(p2);
-  rgb bg = ctx->background;
+  //f32 dist = get_distance(p2);
   pixel_size = ctx->pixel_size;
+  return get_color(p2);
+}
+
+
+rgb df_mix(rgb color, rgb bg, f32 dist){
   if(dist < 0.0){
-    return get_color(p2);
-  }else if(dist < ctx->pixel_size){
-    return rgb_blend(bg, get_color(p2), dist / ctx->pixel_size); 
+    return color;
+  }else if(dist < pixel_size){
+    return rgb_blend(bg, color, dist / pixel_size); 
   }
   return bg;
 }
@@ -119,7 +139,7 @@ void distfield_calc_aspect(distfield_ctx * ctx){
     ctx->stop.x +=d;
     ctx->start.x -= d;
   }else{
-    f32 d = (ctx->stop.y - ctx->start.y) * (1.0 - ctx->aspect) * 0.5;
+    f32 d = (ctx->stop.y - ctx->start.y) * (1.0f / ctx->aspect - 1.0f) * 0.5;
     ctx->stop.y +=d;
     ctx->start.y -= d;
   }
@@ -141,6 +161,7 @@ int main(int c, char ** argv){
     sscanf(argv[3], "%i", &height);
   if(width > 100000 || height > 100000){
     logd("Invalid dimensions %i %i\n", width, height);
+    return -2;
   }
   logd("%s %i %i\n", file, width, height);
   
@@ -156,7 +177,8 @@ int main(int c, char ** argv){
   };
   distfield_calc_aspect(&ctx);
 
-  write_png_file_rgb(file, width, height, 16, color_distfield, &ctx);
+  write_png_file_rgb(file, width, height, 8, color_distfield, &ctx);
   return 0;
   
 }
+
