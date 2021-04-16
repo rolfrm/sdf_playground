@@ -27,6 +27,8 @@ hsv hsv_blend(hsv a, hsv b, f32 ratio);
 
 #define RGB(r2,g2,b2) {.r = r2, .g = g2, .b = b2}
 #define dot(x,y) vec2_dot(x,y)
+#define VEC2(x,y) {.x = x, .y = y}
+
 rgb get_color(vec2 p);
 rgb df_mix(rgb color, rgb bg, f32 dist);
 extern f32 pixel_size;
