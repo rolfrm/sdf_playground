@@ -28,6 +28,12 @@ hsv hsv_blend(hsv a, hsv b, f32 ratio){
   return result;
 }
 
+rgb rgb_add(rgb a, rgb b){
+  a.r += b.r;
+  a.g += b.g;
+  a.b += b.b;
+  return a;
+}
 
 void write_png_file_rgb(const char *filename, const int width, const int height, int bit_depth, rgb (* f) (int x, int y, void * userdata), void * userdata) {
 
@@ -182,3 +188,59 @@ int main(int c, char ** argv){
   
 }
 
+
+f32 fract(f32 x){
+  return x - floor(x);
+}
+
+
+f32 noise(vec2 coords) {
+   return fract(sin(dot(coords, vec2_new(12.9898,78.233))) * 43758.5453);
+}
+
+
+rgb df_gradient(vec2 p, rgb color1, rgb color2, vec2 start, vec2 stop){
+  vec2 lvec = vec2_sub(stop, start);
+  f32 ratio = vec2_dot(vec2_sub(p, start), lvec) / sqrtf(vec2_dot(lvec, lvec));
+  ratio = CLAMP(ratio,0,1.0);
+  f32 n = noise(p);
+  ratio = ratio + 2 * (n - 0.5f) / 128.0f;
+  rgb c = rgb_blend(color1, color2, ratio);
+  return c;
+}
+
+
+f32 df_mod(f32 vec, f32 mod){
+  return vec - mod * floor(vec / mod);
+}
+vec2 df_repeat(vec2 p, f32 r){
+  p.x = df_mod(p.x, r);
+  p.y = df_mod(p.y, r);
+  return p;
+}
+
+f32 df_round_square(vec2 p, vec2 center, vec2 radius, f32 corner_radius){
+  radius.x -= corner_radius;
+  radius.y -= corner_radius;
+  return df_square(p, center, radius) - corner_radius;
+}
+
+f32 df_square(vec2 p, vec2 center, vec2 radius){
+  p = vec2_abs(vec2_sub(p, center));
+  if(p.x > radius.x){
+    if(p.y > radius.y)
+      return vec2_len(vec2_sub(p, radius));
+    return p.x - radius.x;
+  }else if(p.y > radius.y)
+    return p.y - radius.y;
+  // inside the square.
+  return fmax(p.y- radius.y, p.x - radius.x);
+}
+
+f32 df_circle(vec2 p, vec2 center, f32 radius){
+  return vec2_len(vec2_sub(p, center)) - radius - pixel_size * 0.25; 
+}
+
+f32 df_outline(f32 dist, f32 width){
+  return fabs(dist) - width;
+}

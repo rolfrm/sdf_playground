@@ -21,15 +21,6 @@ f32 radius3 = 8.3f;
 rgb bg1 = RGB(0,0,0);
 rgb bg2 = RGB(1,0.95,0.9);
 
-f32 fract(f32 x){
-  return x - floor(x);
-}
-
-f32 noise(vec2 coords) {
-   return fract(sin(dot(coords, vec2_new(12.9898,78.233))) * 43758.5453);
-}
-
-
 f32 circle(vec2 p, vec2 center, f32 radius){
   return vec2_len(vec2_sub(p, center)) - radius;
 }
@@ -82,6 +73,8 @@ void load(){
 rgb get_color(vec2 p){
   load();
   rgb bg = gradient(p, bg1, bg2, vec2_new(1.0,1.0), vec2_new(-1.5,-1.5));
+  rgb bg3 = gradient(p, bg2, black, vec2_new(0.5f,1.0), vec2_new(0.5,-1.5));
+  bg = rgb_add(bg, bg3);
   
   rgb a = gradient_circle(p, bg, color0, color2, p1, p2, center1, radius1);
   a = rgb_blend(a, bg, 0.8);
@@ -89,8 +82,8 @@ rgb get_color(vec2 p){
   b = rgb_blend(b, bg, 0.8);
  
   rgb c = gradient_circle(p, b, color1, color2, p1, p2, center3, radius3);
-  f32 sq = square(p, square1, square1_size);
-  return df_mix(square1_color, c, sq);
-
+  f32 sq = square(p, square1, square1_size) - 0.01;
+  rgb d = df_mix(square1_color, c, sq);
+  return d;
   
 }

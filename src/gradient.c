@@ -4,15 +4,6 @@ vec2 p2 = {.x = 0, .y = 1}; // bottom right coordinate..
 rgb color1 = {.r = 0.0, .g = 0.0, .b = 0.0}; // light blue
 rgb color2 = {.r = 1.0, .g = 1.0, .b = 1.0}; // white
 
-f32 fract(f32 x){
-  return x - floor(x);
-}
-
-f32 noise(vec2 coords) {
-   return fract(sin(dot(coords, vec2_new(12.9898,78.233))) * 43758.5453);
-}
-
-
 rgb get_color(vec2 p){
   // (P - P1) dot (P - P2)
   // Linearily interpolate the colors.
