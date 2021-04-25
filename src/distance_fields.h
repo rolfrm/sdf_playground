@@ -29,6 +29,7 @@ rgb rgb_add(rgb a, rgb b);
 
 #define RGB(r2,g2,b2) {.r = r2, .g = g2, .b = b2}
 #define dot(x,y) vec2_dot(x,y)
+#define dot2(x) vec2_dot(x,x)
 
 #define VEC2(x2,y2) {.x = x2, .y = y2}
 
@@ -45,6 +46,6 @@ f32 df_square(vec2 p, vec2 center, vec2 radius);
 f32 df_round_square(vec2 p, vec2 center, vec2 radius, f32 corner_radius);
 f32 df_circle(vec2 p, vec2 center, f32 radius);
 f32 df_outline(f32 dist, f32 width);
-
+f32 polygon_distance(vec2 p, vec2 * v, u32 len);
 
 #define MIN3(a,b,c) MIN(MIN(a,b),c)

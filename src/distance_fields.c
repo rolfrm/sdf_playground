@@ -244,3 +244,25 @@ f32 df_circle(vec2 p, vec2 center, f32 radius){
 f32 df_outline(f32 dist, f32 width){
   return fabs(dist) - width;
 }
+
+
+f32 polygon_distance(vec2 p, vec2 * v, u32 len)
+{
+  if(len == 0) return f32_infinity;
+  int N = len;
+  f32 d = dot2(vec2_sub(p, v[0]));
+  f32 s = 1.0;
+  for( int i=0, j=N-1; i<N; j=i, i++ )
+    {
+      vec2 e = vec2_sub(v[j], v[i]);
+      vec2 w = vec2_sub(p, v[i]);
+      vec2 b = vec2_sub(w, vec2_scale(e, CLAMP( dot(w,e)/dot(e,e), 0.0, 1.0)));
+      d = MIN( d, dot(b,b) );
+      bool a = p.y>=v[i].y,
+	bb = p.y<v[j].y,
+	c = e.x*w.y>e.y*w.x;
+      
+      if( (a & bb & c) || (!a && !bb && !c) ) s*=-1.0;  
+    }
+    return s*sqrtf(d);
+}

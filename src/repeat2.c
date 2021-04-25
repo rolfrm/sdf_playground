@@ -1,7 +1,7 @@
 #include <distance_fields.h>
 vec2 p1 = {.x = 0.125, .y = .125}; // center screen
 rgb color1 = {.r = 0.5, .g = 0.3, .b = 0.3};
-rgb color2 = {.r = 1.0, .g = 0.9, .b = 0.9};
+rgb color2 = {.r = 0.7, .g = 0.7, .b = 0.9};
 rgb background = RGB(1,1,1);
 vec2 p2 = {.x = 0.125, .y = .125}; // center screen
 vec2 p3 = VEC2(0.1f,0.1f);
